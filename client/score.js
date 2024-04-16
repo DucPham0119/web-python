@@ -34,11 +34,25 @@ document.getElementById('quizForm').addEventListener('submit', function (event) 
 
     var numQuestions = document.getElementById('numQuestions').value;
     var answers = {}; // Đối tượng JSON chứa các đáp án
-
+    let hasError = false
     for (var i = 0; i < numQuestions; i++) {
         var questionNumber = i + 1;
         var answerInput = document.querySelector('input[name="answer' + questionNumber + '"]');
-        answers['answer' + questionNumber] = answerInput.value;
+        var answerValue = parseInt(answerInput.value);
+
+        // Kiểm tra giá trị nhập vào
+        if (answerValue === null || isNaN(answerValue) || answerValue < 1 || answerValue > 4 ) {
+            hasError = true;
+            break; // Ngừng vòng lặp nếu có lỗi
+        }
+
+        answers[questionNumber] = answerValue;
+    }
+
+    // Nếu có lỗi, không tiến hành gửi dữ liệu lên server
+    if (hasError) {
+        alert('Đáp án đang không hợp lệ.');
+        return;
     }
 
     // Chuyển đổi đối tượng JSON thành chuỗi JSON
