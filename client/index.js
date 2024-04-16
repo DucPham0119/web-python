@@ -2,7 +2,18 @@
 const imagePreview = document.querySelector('[data-target="image-preview"]');
 const spinner = document.querySelector('[data-target="spinner"]');
 const fileUploader = document.querySelector('[data-target="file-uploader"]');
+const submitButton = document.getElementById('submitQuizBtn');
+const imagePreviewRight = document.querySelector('[data-target="image-preview-right"]');
+const spinnerRight = document.querySelector('[data-target="spinner-right"]');
+const studentId = document.getElementById('studentId');
+const score = document.getElementById('score');
+
 fileUploader.addEventListener("change", handleFileUpload);
+submitButton.addEventListener("click", handleQuizSubmission);
+
+let uploadedImage = null; // Lưu trữ hình ảnh đã tải lên
+let response = null;
+
 
 async function handleFileUpload(e) {
   try {
@@ -13,18 +24,11 @@ async function handleFileUpload(e) {
     const beforeUploadCheck = await beforeUpload(file);
     if (!beforeUploadCheck.isValid) throw beforeUploadCheck.errorMessages;
 
-    const arrayBuffer = await getArrayBuffer(file);
-    const base64Img = arrayBuffer.split("base64,")[1]
-
-    const response = await uploadFileAJAX(base64Img);
-
-    console.log(response);
-    
     showPreviewImage(file);
+    uploadedImage = file
     alert("File Uploaded Success");
   } catch (error) {
-    alert(error);
-    console.log("Catch Error: ", error);
+    alert("Error Upload: ", error);
   } finally {
     e.target.value = '';  // reset input file
     setUploading(false);
@@ -58,15 +62,38 @@ function getArrayBuffer(fileObj) {
   });
 }
 
+async function handleQuizSubmission() {
+  console.log("submit");
+  if (!uploadedImage) {
+    alert("Vui lòng tải lên hình ảnh trước khi chấm bài!");
+    return;
+  }
+
+  const arrayBuffer = await getArrayBuffer(uploadedImage);
+  const base64Img = arrayBuffer.split("base64,")[1]
+
+  response = uploadFileAJAX(base64Img)
+    .then(response => {
+      setUploadingRight(true)
+      console.log(response)
+      alert("Đã chấm bài thành công!");
+      console.log(response['anh_dc_cham'])
+      uploadByBase64(response['anh_dc_cham'])
+      studentId.textContent = 'Student Id: ' + response['student_id'];
+      score.textContent = response['score'];
+    })
+    .catch(error => {
+      alert("Lỗi khi chấm bài: " + error);
+      setUploadingRight(false);
+    });
+  
+}
+
 // STEP 4: upload file throguth AJAX
 // - use "new Uint8Array()"" to change ArrayBuffer into TypedArray
 // - TypedArray is not a truely Array,
 //   use "Array.from()" to change it into Array
 function uploadFileAJAX(arrayBuffer) {
-
-  // console.log(arrayBuffer)
-
-  // correct it to your own API endpoint
   return fetch("http://127.0.0.1:5000", {
     headers: {
       version: 1,
@@ -99,11 +126,6 @@ function beforeUpload(fileObject) {
       errorMessages.push("You can only upload JPG or PNG file!");
     }
 
-    // const isValidFileSize = fileObject.size / 1024 / 1024 < 2;
-    // if (!isValidFileSize) {
-    //   errorMessages.push("Image must smaller than 2MB!");
-    // }
-
     resolve({
       isValid: isValidFileType,
       errorMessages: errorMessages.join("\n")
@@ -117,4 +139,17 @@ function setUploading(isUploading) {
   } else {
     spinner.classList.remove("opacity-1");
   }
+}
+
+function setUploadingRight(isUploading) {
+  if (isUploading === true) {
+    spinnerRight.classList.add("opacity-1");
+  } else {
+    spinnerRight.classList.remove("opacity-1");
+  }
+}
+
+function uploadByBase64(base64Img) {
+  const imageDataUrl = 'data:image/jpeg;base64,' + base64Img;
+  imagePreviewRight.src = imageDataUrl;
 }

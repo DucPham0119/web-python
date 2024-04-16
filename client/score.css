@@ -1,0 +1,22 @@
+#quizContainer {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* Chia thành 4 cột bằng nhau */
+    gap: 20px; /* Khoảng cách giữa các ô nhập */
+    padding: 20px;
+}
+
+.question-label {
+    text-align: right;
+}
+
+.answer-input {
+    width: 70%; /* Ô nhập đáp án chiếm toàn bộ chiều rộng của cột */
+    padding: 5px;
+}
+
+#submitButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang nhập câu trắc nghiệm</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="score.css">
+</head>
+<body>
+    <h2>Nhập số câu trắc nghiệm:</h2>
+    <form id="quizForm">
+        <label for="numQuestions">Số câu trắc nghiệm:</label>
+        <input type="number" id="numQuestions" name="numQuestions" min="1" required>
+        <button type="button" onclick="generateQuiz()">Tạo câu trắc nghiệm</button>
+
+        <div id="quizContainer">
+            <!-- Các câu hỏi và ô nhập đáp án sẽ được tạo ở đây -->
+        </div>
+
+        <button type="submit" style="display: none;" id="submitButton">Lưu đáp án</button>
+    </form>
+
+</body>
+<script src="score.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</html>

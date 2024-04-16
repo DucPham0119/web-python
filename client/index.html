@@ -1,44 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="index.scss">
-    <title>CHẤM BÀI TRẮC NGHIỆM</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="index.scss">
+  <title>CHẤM BÀI TRẮC NGHIỆM</title>
 </head>
+
 <body>
-    <div class="container p-5">
-        <h2 class="mb-5 text-center">Chấm bài trắc nghiệm</h2>
-        
+  <div class="container p-5">
+    <h2 class="mb-5 text-center">Chấm bài trắc nghiệm</h2>
+
+    <div class="row">
+      <div class="col-md-6">
         <label class="text-center mb-5 image-preview-wrapper" for="file-uploader">
-          <img src="https://via.placeholder.com/300x300/efefef?text=Image" alt="image-placehoder" style="width:300px;height:300px;" class="img-thumbnail" data-target="image-preview">
+          <img src="https://via.placeholder.com/300x300/efefef?text=Image" alt="image-placehoder"
+            style="width:300px;height:300px;" class="img-thumbnail" data-target="image-preview">
           <div class="spinner-wrapper position-absolute" data-target="spinner">
             <div class="spinner-border text-secondary" role="status">
               <span class="sr-only">Loading...</span>
             </div>
           </div>
         </label>
-        
+
         <div class="row">
           <div class="col-12 col-md-6 mx-auto">
             <div class="custom-file">
-              <input multiple="multiple"  accept="image/*" type="file" class="custom-file-input" data-target="file-uploader" id="file-uploader">
+              <input multiple="multiple" accept="image/*" type="file" class="custom-file-input"
+                data-target="file-uploader" id="file-uploader">
               <label class="custom-file-label" for="customFile"></label>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="row">
-          <div class="col-12 col-md-6 mx-auto">
-
-            <input class="btn btn-primary btn-lg" type="submit" value="Chấm bài!">
-
+      <div class="col-md-6">
+        <label class="text-center mb-5 image-preview-wrapper" for="file-uploader-right">
+          <img src="https://via.placeholder.com/300x300/efefef?text=Image" alt="image-placeholder"
+            style="width:300px;height:300px;" class="img-thumbnail" data-target="image-preview-right">
+          <div class="spinner-wrapper position-absolute" data-target="spinner-right">
+            <div class="spinner-border text-secondary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
           </div>
+        </label>
+
+        <div class=" text-under-image">
+          <p><strong>Kết quả của bài trắc nghiệm</strong></p>
+          <p id="studentId"></p> <!-- Thông tin 1 -->
+          <p id="score"></p> <!-- Thông tin 2 -->
         </div>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <input id="submitQuizBtn" class="btn btn-primary btn-lg" type="submit" value="Chấm bài!">
+      </div>
+    </div>
+  </div>
 </body>
 <script src="index.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 </html>
