@@ -7,6 +7,7 @@ from imutils.perspective import four_point_transform
 from digit import digit_recog
 from PIL import Image
 from io import BytesIO
+import json
 
 
 # import requests
@@ -28,18 +29,24 @@ def imgToBase64(img):
 
 
 def auto_scoring(image):
-    ANSWER_KEY = {0: 3, 1: 2, 2: 1, 3: 3, 4: 1, 5: 0, 6: 2, 7: 3, 8: 3, 9: 1, 10: 0,
-                  11: 0, 12: 3, 13: 3, 14: 2, 15: 0, 16: 2, 17: 0, 18: 3, 19: 2, 20: 0,
-                  21: 2, 22: 1, 23: 0, 24: 2, 25: 0, 26: 3, 27: 1, 28: 3, 29: 1, 30: 3,
-                  31: 3, 32: 0, 33: 3, 34: 2, 35: 2, 36: 0, 37: 2, 38: 0, 39: 1, 40: 3,
-                  41: 3, 42: 0, 43: 1, 44: 3, 45: 1, 46: 0, 47: 2, 48: 3, 49: 1, 50: 1,
-                  51: 0, 52: 1, 53: 1, 54: 3, 55: 1, 56: 2, 57: 1, 58: 3, 59: 1, 60: 3,
-                  61: 1, 62: 3, 63: 3, 64: 3, 65: 1, 66: 1, 67: 1, 68: 1, 69: 0, 70: 3,
-                  71: 1, 72: 3, 73: 0, 74: 0, 75: 0, 76: 3, 77: 3, 78: 2, 79: 1, 80: 2,
-                  81: 3, 82: 2, 83: 2, 84: 2, 85: 2, 86: 2, 87: 3, 88: 2, 89: 0, 90: 0,
-                  91: 1, 92: 3, 93: 0, 94: 1, 95: 2, 96: 2, 97: 3, 98: 2, 99: 0}
-    # modify answer key
+    # ANSWER_KEY = {0: 3, 1: 2, 2: 1, 3: 3, 4: 1, 5: 0, 6: 2, 7: 3, 8: 3, 9: 1, 10: 0,
+    #               11: 0, 12: 3, 13: 3, 14: 2, 15: 0, 16: 2, 17: 0, 18: 3, 19: 2, 20: 0,
+    #               21: 2, 22: 1, 23: 0, 24: 2, 25: 0, 26: 3, 27: 1, 28: 3, 29: 1, 30: 3,
+    #               31: 3, 32: 0, 33: 3, 34: 2, 35: 2, 36: 0, 37: 2, 38: 0, 39: 1, 40: 3,
+    #               41: 3, 42: 0, 43: 1, 44: 3, 45: 1, 46: 0, 47: 2, 48: 3, 49: 1, 50: 1,
+    #               51: 0, 52: 1, 53: 1, 54: 3, 55: 1, 56: 2, 57: 1, 58: 3, 59: 1, 60: 3,
+    #               61: 1, 62: 3, 63: 3, 64: 3, 65: 1, 66: 1, 67: 1, 68: 1, 69: 0, 70: 3,
+    #               71: 1, 72: 3, 73: 0, 74: 0, 75: 0, 76: 3, 77: 3, 78: 2, 79: 1, 80: 2,
+    #               81: 3, 82: 2, 83: 2, 84: 2, 85: 2, 86: 2, 87: 3, 88: 2, 89: 0, 90: 0,
+    #               91: 1, 92: 3, 93: 0, 94: 1, 95: 2, 96: 2, 97: 3, 98: 2, 99: 0}
 
+    f = open('data.json')
+    ANSWER_KEY = json.load(f)
+    question_length = len(ANSWER_KEY)
+    for i in range(len(ANSWER_KEY)+1, 101):
+        ANSWER_KEY[str(i)] = -1
+
+    # modify answer key
     b = list(ANSWER_KEY.values())
     b = np.array(b).reshape(-1, 25).transpose().flatten()
 
@@ -68,7 +75,7 @@ def auto_scoring(image):
             break
 
     if tmp is None:
-        return np.array([])
+        return np.array([]), "", ""
 
     color_img = four_point_transform(image, tmp.reshape(4, 2))
 
@@ -98,7 +105,7 @@ def auto_scoring(image):
 
     ##########
     if student_id_box == 0:
-        return np.array([])
+        return np.array([]), "", ""
 
     x, y, w, h = student_id_box[0], student_id_box[1], student_id_box[2], student_id_box[3]
 
@@ -123,7 +130,7 @@ def auto_scoring(image):
 
     ############
     if len(questionCnts) != 500:
-        return np.array([])
+        return np.array([]), "", ""
 
     # sort the question contours top-to-bottom
 
@@ -141,42 +148,43 @@ def auto_scoring(image):
         sorted_cnt = sorted_cnt + list(cnts)
 
     for (q, i) in enumerate(np.arange(0, 500, 5)):
-        cnts = sorted_cnt[i:i + 5]
-        bubbled = None
+        if b[q] != -1: 
+            cnts = sorted_cnt[i:i + 5]
+            bubbled = None
 
-        # loop over the sorted contours
-        for (j, c) in enumerate(cnts):
-            # create a mask that reveals ONLY the current bubled for the question
-            mask = np.zeros(thresh.shape, dtype="uint8")
-            cv2.drawContours(mask, [c], -1, 255, -1)
+            # loop over the sorted contours
+            for (j, c) in enumerate(cnts):
+                # create a mask that reveals ONLY the current bubled for the question
+                mask = np.zeros(thresh.shape, dtype="uint8")
+                cv2.drawContours(mask, [c], -1, 255, -1)
 
-            # apply the mask to the thresholded image, then
-            # count the number of non-zero pixels in the
-            # bubble area
-            mask = cv2.bitwise_and(thresh, thresh, mask=mask)
-            total = cv2.countNonZero(mask)
+                # apply the mask to the thresholded image, then
+                # count the number of non-zero pixels in the
+                # bubble area
+                mask = cv2.bitwise_and(thresh, thresh, mask=mask)
+                total = cv2.countNonZero(mask)
 
-            # find the maximum non-zero pixels --> the chosen one
-            if bubbled is None or total > bubbled[0]:
-                bubbled = (total, j)
+                # find the maximum non-zero pixels --> the chosen one
+                if bubbled is None or total > bubbled[0]:
+                    bubbled = (total, j)
 
-        # create the contour color and the index of the CORRECT answer
-        color = (0, 0, 255)  # RED
-        k = b[q]
-        # print("ans:",k)
-        # print("choose:", bubbled[1])
+            # create the contour color and the index of the CORRECT answer
+            color = (0, 0, 255)  # RED
+            k = b[q]
+            # print("ans:",k)
+            # print("choose:", bubbled[1])
 
-        # check whether the bubbled answer is correct
-        if k == bubbled[1]:
-            # change color to green
-            color = (0, 255, 0)  # GREEN
-            correct += 1
-        # draw the outline of the correct answer on the test
-        cv2.drawContours(color_img, [cnts[k]], -1, color, 3)
+            # check whether the bubbled answer is correct
+            if k == bubbled[1]:
+                # change color to green
+                color = (0, 255, 0)  # GREEN
+                correct += 1
+            # draw the outline of the correct answer on the test
+            cv2.drawContours(color_img, [cnts[k]], -1, color, 3)
 
-    print("Score: {}/{}".format(correct, len(ANSWER_KEY)))
-    score = "Score: {}/{}".format(correct, len(ANSWER_KEY))
-    cv2.putText(color_img, "{}/{} - {}".format(correct, len(ANSWER_KEY), student_id), (10, 30),
+    print("Score: {}/{}".format(correct, question_length))
+    score = "Score: {}/{}".format(correct, question_length)
+    cv2.putText(color_img, "{}/{} - {}".format(correct, question_length, student_id), (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
     return color_img, student_id, score
