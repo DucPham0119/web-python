@@ -19,7 +19,8 @@ def digit_recog(img):
 		end = int(width_per_num*(k+1))
 		digit = cv2.resize(img[:, start:end], [28, 28])
 		# digit = cv2.threshold(digit, 185, 255, cv2.THRESH_BINARY_INV)[1]
-		digit = cv2.adaptiveThreshold(digit,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,27,2)
+		# digit = cv2.adaptiveThreshold(digit,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,27,2)
+		digit = cv2.adaptiveThreshold(digit,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,2)
 		digit[0:4, :] = np.zeros([4, 28])
 		digit[24:28, :] = np.zeros([4, 28])
 		digit[:, 0:4] = np.zeros([28, 4])
