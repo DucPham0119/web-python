@@ -78,6 +78,8 @@ async function handleQuizSubmission() {
       if (response['status_ne'] == false) {
         imagePreviewRight.src = "https://minhtuanmobile.com/uploads/editer/images/21-05-09/18-bieu-tuong-cam-xuc-xu-huong-nam-2022-duoc-nhieu-cu-dan-mang-su-dung-7.jpg";
         alert("Không thể chấm được ảnh này!");
+        studentId.textContent = '';
+        score.textContent = '';
       }
       else {
         // console.log(response['anh_dc_cham'])
