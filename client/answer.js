@@ -35,18 +35,25 @@ document.getElementById('quizForm').addEventListener('submit', function (event) 
     var numQuestions = document.getElementById('numQuestions').value;
     var answers = {}; // Đối tượng JSON chứa các đáp án
     let hasError = false
+
+    answer_characters = ["A", "B", "C", "D", "E"];
+    answer_map = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4}
     for (var i = 0; i < numQuestions; i++) {
         var questionNumber = i + 1;
         var answerInput = document.querySelector('input[name="answer' + questionNumber + '"]');
-        var answerValue = parseInt(answerInput.value);
-
+        var answerValue = answerInput.value;
+        var standard_answerValue = answerValue.trim().toUpperCase();
+        console.log(answerValue === null)
+        console.log(isNaN(answerValue))
+        console.log(!answer_characters.includes(standard_answerValue))
+        
         // Kiểm tra giá trị nhập vào
-        if (answerValue === null || isNaN(answerValue) || answerValue < 1 || answerValue > 4 ) {
+        if (answerValue === null || !answer_characters.includes(standard_answerValue) ) {
             hasError = true;
             break; // Ngừng vòng lặp nếu có lỗi
         }
 
-        answers[questionNumber] = answerValue;
+        answers[questionNumber] = answer_map[standard_answerValue];
     }
 
     // Nếu có lỗi, không tiến hành gửi dữ liệu lên server

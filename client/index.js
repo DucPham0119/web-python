@@ -14,7 +14,6 @@ submitButton.addEventListener("click", handleQuizSubmission);
 let uploadedImage = null; // Lưu trữ hình ảnh đã tải lên
 let response = null;
 
-
 async function handleFileUpload(e) {
   try {
     const file = e.target.files[0];
@@ -63,7 +62,7 @@ function getArrayBuffer(fileObj) {
 }
 
 async function handleQuizSubmission() {
-  console.log("submit");
+  // console.log("submit");
   if (!uploadedImage) {
     alert("Vui lòng tải lên hình ảnh trước khi chấm bài!");
     return;
@@ -76,11 +75,17 @@ async function handleQuizSubmission() {
     .then(response => {
       setUploadingRight(true)
       console.log(response)
-      alert("Đã chấm bài thành công!");
-      console.log(response['anh_dc_cham'])
-      uploadByBase64(response['anh_dc_cham'])
-      studentId.textContent = 'Student Id: ' + response['student_id'];
-      score.textContent = response['score'];
+      if (response['status_ne'] == false) {
+        imagePreviewRight.src = "https://minhtuanmobile.com/uploads/editer/images/21-05-09/18-bieu-tuong-cam-xuc-xu-huong-nam-2022-duoc-nhieu-cu-dan-mang-su-dung-7.jpg";
+        alert("Không thể chấm được ảnh này!");
+      }
+      else {
+        // console.log(response['anh_dc_cham'])
+        uploadByBase64(response['anh_dc_cham'])
+        studentId.textContent = 'Student Id: ' + response['student_id'];
+        score.textContent = response['score'];
+        alert("Đã chấm bài thành công!");
+      }
     })
     .catch(error => {
       alert("Lỗi khi chấm bài: " + error);
